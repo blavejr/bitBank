@@ -1,1 +1,2 @@
-# bitBank
+# BitBank
+
