@@ -1,5 +1,5 @@
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
@@ -11,6 +11,7 @@ import BBlayoutView from '@/components/ui/layoutView';
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const router = useRouter();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/Roboto_Flex/static/RobotoFlex-Regular.ttf'),
   });
@@ -19,6 +20,7 @@ export default function RootLayout() {
     verifyInstallation();
     if (loaded) {
       SplashScreen.hideAsync();
+      router.replace('/login');
     }
   }, [loaded]);
 
@@ -29,6 +31,7 @@ export default function RootLayout() {
   return (
       <BBlayoutView>
         <Stack>
+          <Stack.Screen name="login" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>

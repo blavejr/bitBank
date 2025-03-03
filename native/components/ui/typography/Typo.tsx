@@ -15,6 +15,8 @@ const BBText = tv({
         success: 'text-green-500',
         warning: 'text-yellow-500',
         info: 'text-blue-500',
+        white: 'text-white',
+        black: 'text-black',
       },
       size: {
         sm: 'text-sm',

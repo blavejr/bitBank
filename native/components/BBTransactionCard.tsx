@@ -9,14 +9,20 @@ interface BBTransactionCardProps {
     time: string;
     amount: string;
     transactionType: 'credit' | 'debit';
+    image: string;
 }
 
-export default function BBTransactionCard({ name, type, date, time, amount, transactionType }: BBTransactionCardProps) {
+const images = {
+  'lady': require('../assets/images/lady-ph.png'),
+  'guy': require('../assets/images/guy-ph.png'),
+};
+
+export default function BBTransactionCard({ name, type, date, time, amount, transactionType, image }: BBTransactionCardProps) {
   const [firstName, lastName] = name.split(' ');
   const truncatedName = `${firstName} ${lastName[0]}.`;
   return (
-    <TouchableOpacity className="flex-row items-center justify-between w-full ml-4 mr-4">
-      <Image source={require('../assets/images/icon.png')} style={{ width: 50, height: 50, borderRadius: 50 }} className="w-1/4" />
+    <TouchableOpacity className="flex-row items-center justify-between w-full ml-4 mr-4 mt-2 mb-2">
+      <Image source={images[image as keyof typeof images]} style={{ width: 50, height: 50, borderRadius: 50 }} className="w-1/4" />
         <View className="flex flex-col w-1/4">
             <Text className="font-bold">{truncatedName}</Text>
             <Text>{type}</Text>

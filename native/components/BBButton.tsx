@@ -13,11 +13,11 @@ interface BBButtonProps {
 export default function BBButton({ label, symbol="bank", text, rounded, onPress }: BBButtonProps) {
   return (
     <View className="items-center gap-2 mt-4">
-      <TouchableOpacity onPress={onPress} style={{ borderRadius: rounded ? 20 : 50, padding: 10, backgroundColor: 'gray', alignItems: 'center', justifyContent: 'center' }}>
-        {symbol && <IconSymbol name={symbol as any} size={24} />}
-        {text && <Typography size="sm" weight="bold">{text}</Typography>}
+      <TouchableOpacity onPress={onPress} className="bg-background-primary rounded-full p-4 items-center justify-center">
+        {symbol && <IconSymbol name={symbol as any} size={24} color="skyblue"/>}
+        {text && <Typography size="sm" weight="bold" color="white">{text}</Typography>}
       </TouchableOpacity>
-      {label && <Typography size="sm" weight="bold" style={{ marginTop: 5 }}>{label}</Typography>}
+      {label && <Typography size="sm" weight="bold" style={{ marginTop: 5 }} color="white">{label}</Typography>}
     </View>
   )
 }
