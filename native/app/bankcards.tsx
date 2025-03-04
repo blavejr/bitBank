@@ -2,17 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { View, Text, TouchableOpacity, Image, ScrollView, ActivityIndicator } from 'react-native'
 import { router, useRouter } from 'expo-router';
 import BBButton from '@/components/BBButton';
-
-const cardsData = [
-  {
-    id: 1,
-    number: '1234567890',
-    cvv: '123',
-    expiryDate: '01/25',
-    image: require('../assets/images/visa-1.png'),
-    isLocked: false // Added to track the lock state of each card
-  }
-];
+import { cards as cardsData, ICard } from '@/data/cards/cards';
+import { readFromStorage } from '@/utils/localStorage';
+import { IUser } from '@/data/users/users';
+import { accounts } from '@/data/accounts/accounts';
 
 interface Card {
   id: number;
@@ -21,34 +14,49 @@ interface Card {
   expiryDate: string;
   image: any;
   isLocked: boolean; // Added to the interface to include the lock state
+  name: string; // Added to include the card name
 }
 
 export default function BankCardsScreen() {
   const router = useRouter();
-  const [cards, setCards] = useState(cardsData);
+  const [cards, setCards] = useState<ICard[]>([]);
+  const [user, setUser] = useState<IUser | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [scrollRef, setScrollRef] = useState<ScrollView | null>(null);
   const [loadingText, setLoadingText] = useState('');
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user: IUser = await readFromStorage('user');
+      setUser(user);
+      setCards(cardsData.filter((card) => card.userId === user.id));
+    };
+    fetchUser();
+  }, []);
+
   const handleCreateCard = () => {
+    if (!user) return;
     setLoadingText('Generating card...');
     setIsLoading(true);
     setTimeout(() => {
-      // Generate a new random card object
+      const userAccount = accounts.find((account) => account.userId === user.id);
+      if (!userAccount?.id) return; // Exit if no valid account found
+
       const newCard = {
-        id: Math.random() * 1000, // Assuming this is a unique identifier
+        id: Math.random() * 1000,
+        name: 'New Card', // Assuming a default name for the new card
         number: `${Math.floor(Math.random() * 1000000000000000)}`,
         cvv: `${Math.floor(Math.random() * 1000)}`,
-        expiryDate: `${Math.floor(Math.random() * 12) + 1}/${Math.floor(Math.random() * 100) + 20}`,
-        image: require('../assets/images/visa-1.png'), // Assuming this is a default image
-        isLocked: false // New cards are not locked by default
+        expiry: `${Math.floor(Math.random() * 12) + 1}/${Math.floor(Math.random() * 100) + 20}`,
+        image: require('../assets/images/visa-1.png'),
+        isLocked: false,
+        userId: user.id,
+        accountId: userAccount.id,  // Now we know this is a valid number
       };
-      // Push the new card to the state array
       setCards([...cards, newCard]);
       setIsLoading(false);
-      // Scroll to the bottom after adding a new card
       scrollRef?.scrollToEnd({ animated: true });
-    }, 2000); // Simulate a 2-second loading animation
+    }, 2000);
   }
 
   const handleDeleteCard = (cardId: number) => {
@@ -95,7 +103,7 @@ export default function BankCardsScreen() {
         {cards.map((card, index) => (
           <View key={index} className="mb-5 relative">
             {card.isLocked && (
-              <View className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex items-center justify-center">
+              <View className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex items-center justify-center rounded-lg">
                 <Text className="text-white text-xl font-bold">LOCKED</Text>
               </View>
             )}
@@ -103,6 +111,10 @@ export default function BankCardsScreen() {
             <View className="p-5">
               <Text className="text-xl font-semibold text-gray-800 mb-2">Card Details</Text>
               <View className="flex-row justify-between mb-2.5">
+                <View>
+                  <Text className="text-base text-gray-800 mb-1">Name</Text>
+                  <Text className="text-base text-primary">{card.name}</Text>
+                </View>
                 <View>
                   <Text className="text-base text-gray-800 mb-1">Card Number</Text>
                   <Text className="text-base text-primary">{card.number}</Text>
@@ -112,8 +124,8 @@ export default function BankCardsScreen() {
                   <Text className="text-base text-primary">{card.cvv}</Text>
                 </View>
                 <View>
-                  <Text className="text-base text-gray-800 mb-1">Expiry Date</Text>
-                  <Text className="text-base text-primary">{card.expiryDate}</Text>
+                  <Text className="text-base text-gray-800 mb-1">Expiry</Text>
+                  <Text className="text-base text-primary">{card.expiry}</Text>
                 </View>
               </View>
               <View className="flex-row justify-between items-center mt-5">

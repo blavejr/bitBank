@@ -1,6 +1,7 @@
 import { TouchableOpacity, Text, Image, View } from 'react-native'
 import React from 'react'
 import { IconSymbol } from './ui/IconSymbol'
+import { router } from 'expo-router';
 
 interface BBTransactionCardProps {
     name: string;
@@ -20,8 +21,17 @@ const images = {
 export default function BBTransactionCard({ name, type, date, time, amount, transactionType, image }: BBTransactionCardProps) {
   const [firstName, lastName] = name.split(' ');
   const truncatedName = `${firstName} ${lastName[0]}.`;
+  
+  const transaction = { name, type, date, time, amount, transactionType, image };
+  
   return (
-    <TouchableOpacity className="flex-row items-center justify-between w-full ml-4 mr-4 mt-2 mb-2">
+    <TouchableOpacity 
+      className="flex-row items-center justify-between w-full ml-4 mr-4 mt-2 mb-2" 
+      onPress={() => router.push({
+        pathname: '/transactions/transaction-details',
+        params: { transaction: JSON.stringify(transaction) }
+      })}
+    >
       <Image source={images[image as keyof typeof images]} style={{ width: 50, height: 50, borderRadius: 50 }} className="w-1/4" />
         <View className="flex flex-col w-1/4">
             <Text className="font-bold">{truncatedName}</Text>

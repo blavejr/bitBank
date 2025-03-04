@@ -13,6 +13,7 @@ interface BBFlatCardProps {
 export default function BBFlatCard({ title="title", description="description", children, onPress=() => {}, className="" }: BBFlatCardProps) {
   return (
     <View className={`min-h-10 bg-white p-4 items-center justify-center ${className}`}>
+      <Typography size="md" weight="bold" color="secondary">{title}</Typography>
       <Typography size="sm" weight="normal" color="secondary">{description}</Typography>
       {children}
     </View>
